@@ -22,6 +22,65 @@ public class FriendsDAO {
 		return instance;
 	}
 	
+	public int getListCount() {
+		String sql = "select count(*) from friends";
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		int listCount = 0;
+		try {
+			conn = DBManager.getConnection();
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				listCount = rs.getInt(1);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			DBManager.close(conn, pstmt);
+		}
+		return listCount;
+	}
+	
+	public List<FriendsVO> selectFriendsPage(int page, int limit){
+		String sql =" select * from(select rownum as rnum,a.* from (select * from friends order by birth asc) a) where rnum between ? and ?";
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		List<FriendsVO> list = new ArrayList<FriendsVO>();
+		
+		int startRow = (page - 1) * 10 + 1;
+		int endRow = startRow + limit - 1;
+		
+		try {
+			conn = DBManager.getConnection();
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, startRow);
+			pstmt.setInt(2, endRow);
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				FriendsVO fVo = new FriendsVO();
+				fVo.setName(rs.getString("name"));
+				fVo.setAge(rs.getInt("age"));
+				fVo.setGender(rs.getString("gender"));
+				fVo.setJob(rs.getString("job"));
+				fVo.setRelation(rs.getString("relation"));
+				fVo.setBirth(rs.getString("birth"));
+				fVo.setPhone(rs.getString("phone"));
+				fVo.setPicture(rs.getString("picture"));
+				fVo.setGirlfriend(rs.getString("girlfriend"));
+				list.add(fVo);		
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			DBManager.close(conn, pstmt, rs);
+		}
+		return list;
+		
+	}
+	
 	public List<FriendsVO> selectFreinds() {
 		List<FriendsVO> list = new ArrayList<FriendsVO>();
 		Connection conn = null;
