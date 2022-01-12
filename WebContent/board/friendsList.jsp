@@ -51,7 +51,7 @@
 			<%if(nowPage>=maxPage) {%>		
 				[다음]				
 			<%} else { %>
-				<a href="/FriendsServlet?command=friends_list&page=<%= nowPage + 1%>">[다음]</a>
+				<a href="/FriendsServlet?command=friends_list&page=${nowPage + 1 }">[다음]</a>
 			<%} %>
 	
 		</td>
